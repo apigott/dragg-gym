@@ -13,10 +13,11 @@ env.seed()
 
 # model = SAC(MlpPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
 # model.learn(total_timesteps=1000, tb_log_name="random_agent")
+# model.save('ppo2_dragg_15min_1kW')
 # model = PPO2.load('ppo2_dragg_15min_3kW')
 
 obs = env.reset()
-for _ in range(960):
+for _ in range(240):
     # action, _state = model.predict(obs)
     action = 0
     obs, reward, done, info = env.step(action)

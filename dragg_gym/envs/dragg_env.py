@@ -7,8 +7,6 @@ import itertools as it
 import random
 
 class DRAGGEnv(gym.Env):
-  # metadata = {'render.modes': ['human']}
-
     def __init__(self):
         super(DRAGGEnv, self).__init__()
         self.agg = Aggregator()
