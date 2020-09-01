@@ -11,6 +11,7 @@ class DRAGGEnv(gym.Env):
         super(DRAGGEnv, self).__init__()
         self.agg = Aggregator()
         self.agg.case = 'rl_agg'
+        self.agg.avg_load = 30 # initialize setpoint
 
         self.agg.set_value_permutations()
         self.agg.set_dummy_rl_parameters()
