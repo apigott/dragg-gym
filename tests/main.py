@@ -5,7 +5,7 @@ import dragg_gym
 from dragg.aggregator import Aggregator
 
 import tensorflow as tf
-from stable_baselines.common.policies import MlpPolicy, MlpLnLstmPolicy, ActorCriticPolicy
+from stable_baselines.common.policies import MlpPolicy, MlpLstmPolicy, MlpLnLstmPolicy, ActorCriticPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC
 
@@ -48,13 +48,13 @@ class KerasPolicy(ActorCriticPolicy):
 env = gym.make('dragg-v0')
 env.seed()
 
-model = PPO2(KerasPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
+model = PPO2(MlpLstmPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
 model.learn(total_timesteps=5000, tb_log_name="random_agent")
-model.save('ppo2_dragg_60-15min_AVGkW_keras64')
+model.save('ppo2_dragg_60-15min_3kW_Lstm')
 # model = PPO2.load('ppo2_dragg_15-15min_3kW')
 
 obs = env.reset()
-for _ in range(960):
+for _ in range(240):
     action, _state = model.predict(obs)
     # action = 0
     obs, reward, done, info = env.step(action)
