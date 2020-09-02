@@ -48,7 +48,7 @@ class KerasPolicy(ActorCriticPolicy):
 env = gym.make('dragg-v0')
 env.seed()
 
-model = PPO2(MlpLstmPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
+model = PPO2(MlpLstmPolicy, env, verbose=1, nminibatches=1, tensorboard_log=".tensorboard_logs")
 model.learn(total_timesteps=5000, tb_log_name="random_agent")
 model.save('ppo2_dragg_60-15min_3kW_Lstm')
 # model = PPO2.load('ppo2_dragg_15-15min_3kW')
