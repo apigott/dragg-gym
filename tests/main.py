@@ -45,13 +45,14 @@ class KerasPolicy(ActorCriticPolicy):
     def value(self, obs, state=None, mask=None):
         return self.sess.run(self.value_flat, {self.obs_ph: obs})
 
-model_name = 'ppo2_dragg_60-15min_AVGkW_20k'
+model_name = 'ppo2_dragg_15-15min_AVGkW_Lstm'
 
-env = gym.make('dragg-v0')
-env.seed()
+# env = gym.make('dragg-v0')
+env = DummyVecEnv([lambda: gym.make('dragg-v0')])
+# env.seed()
 
 model = PPO2(MlpPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
-model.learn(total_timesteps=20000, tb_log_name="random_agent")
+model.learn(total_timesteps=5000, tb_log_name="random_agent")
 model.save(model_name)
 # model = PPO2.load(model_name)
 
@@ -63,13 +64,13 @@ for _ in range(240):
     print(env.agg.agg_load, env.agg.agg_setpoint)
 env.agg.write_outputs(inc_rl_agents=False)
 
-# obs = env.reset()
-# state = None
-# done = [False for _ in range(1)]
-# for _ in range(240):
-#     action, state = model.predict(obs, state=state, mask=done)
-#     obs, reward , done, info = env.step(action)
-# env.agg.write_outputs(inc_rl_agents=False)
+obs = env.reset()
+state = None
+done = [False for _ in range(1)]
+for _ in range(240):
+    action, state = model.predict(obs, state=state, mask=done)
+    obs, reward , done, info = env.step(action)
+# env.write_outputs(inc_rl_agents=False)
 
 # r = Reformat()
 # r.tf_main()

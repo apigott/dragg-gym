@@ -61,6 +61,7 @@ class DRAGGEnv(gym.Env):
         self._take_action(action)
         obs = self._get_state()
         reward = self._get_reward(obs)
+        self.agg.write_outputs(inc_rl_agents=False) # how to do this better for DummyVecEnv??
         done = False
         return obs, reward, done, {}
 
@@ -76,8 +77,11 @@ class DRAGGEnv(gym.Env):
         obs = self._get_state()
         return obs
 
-    def _render(self, mode: str = "human", close: bool = False) -> None:
+    def _render(self, mode: str = "human", close: bool = False):
         return None
+
+    def write_outputs(self):
+        self.agg.write_outputs(inc_rl_agents=False)
 
     def close(self):
         pass
