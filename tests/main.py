@@ -45,7 +45,7 @@ class KerasPolicy(ActorCriticPolicy):
     def value(self, obs, state=None, mask=None):
         return self.sess.run(self.value_flat, {self.obs_ph: obs})
 
-model_name = 'ppo2_dragg_60-15min_AVGkW_LnLstm'
+model_name = 'ppo2_LastN12AVGkW_Lstm'
 
 # env = gym.make('dragg-v0')
 env = DummyVecEnv([lambda: gym.make('dragg-v0')])
