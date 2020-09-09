@@ -45,14 +45,14 @@ class KerasPolicy(ActorCriticPolicy):
     def value(self, obs, state=None, mask=None):
         return self.sess.run(self.value_flat, {self.obs_ph: obs})
 
-model_name = 'a2c_LastN12AVGkW_discountedMPC'
+model_name = 'a2c_discounted_learn'
 
 # env = gym.make('dragg-v0')
 env = DummyVecEnv([lambda: gym.make('dragg-v0')])
 # env.seed()
 
 # model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log=".tensorboard_logs")
-model = A2C(KerasPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
+model = A2C(MlpLnLstmPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
 
 model.learn(total_timesteps=5000, tb_log_name="random_agent")
 model.save(model_name)
