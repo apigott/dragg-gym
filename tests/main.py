@@ -16,10 +16,10 @@ class KerasPolicy(ActorCriticPolicy):
         with tf.variable_scope("model", reuse=reuse):
             flat = tf.keras.layers.Flatten()(self.processed_obs)
 
-            x = tf.keras.layers.Dense(64, activation="tanh", name='pi_fc_0')(flat)
+            x = tf.keras.layers.Dense(1, activation="tanh", name='pi_fc_0')(flat)
             pi_latent = tf.keras.layers.Dense(1, activation="tanh", name='pi_fc_1')(x)
 
-            x1 = tf.keras.layers.Dense(64, activation="tanh", name='vf_fc_0')(flat)
+            x1 = tf.keras.layers.Dense(1, activation="tanh", name='vf_fc_0')(flat)
             vf_latent = tf.keras.layers.Dense(1, activation="tanh", name='vf_fc_1')(x1)
 
             value_fn = tf.keras.layers.Dense(1, name='vf')(vf_latent)
@@ -52,7 +52,7 @@ env = DummyVecEnv([lambda: gym.make('dragg-v0')])
 # env.seed()
 
 # model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log=".tensorboard_logs")
-model = A2C(MlpLnLstmPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
+model = A2C(KerasPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
 
 model.learn(total_timesteps=5000, tb_log_name="random_agent")
 model.save(model_name)
