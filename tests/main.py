@@ -7,7 +7,7 @@ from dragg.aggregator import Aggregator
 import tensorflow as tf
 from stable_baselines.common.policies import MlpPolicy, MlpLstmPolicy, MlpLnLstmPolicy, ActorCriticPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
-from stable_baselines import PPO2, A2C, SAC
+from stable_baselines import PPO2, A2C, SAC, HER
 
 class KerasPolicy(ActorCriticPolicy):
     def __init__(self, sess, ob_space, ac_space, n_env, n_steps, n_batch, reuse=False, **kwargs):
@@ -45,15 +45,19 @@ class KerasPolicy(ActorCriticPolicy):
     def value(self, obs, state=None, mask=None):
         return self.sess.run(self.value_flat, {self.obs_ph: obs})
 
-model_name = 'a2c_discounted_learn'
+model_name = 'penalizedRP'
 
 # env = gym.make('dragg-v0')
+# model = SAC(MlpPolicy, env, verbose=1)
 env = DummyVecEnv([lambda: gym.make('dragg-v0')])
-# env.seed()
 
-# model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log=".tensorboard_logs")
-model = A2C(MlpLnLstmPolicy, env, verbose=1, tensorboard_log=".tensorboard_logs")
-
+model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log=".tensorboard_logs")
+# model = SAC(MlpLnLstmPolicy, env, n_env=1, n_batch=1, n_steps=5000, verbose=1, tensorboard_log=".tensorboard_logs")
+# model_class = SAC
+# goal_selection_strategy = 'future'
+# model = HER('MlpLnLstmPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=goal_selection_strategy,
+#                                                 verbose=1)
+#
 model.learn(total_timesteps=5000, tb_log_name="random_agent")
 model.save(model_name)
 # model = PPO2.load(model_name)
@@ -69,6 +73,7 @@ state = None
 done = [False for _ in range(1)]
 for _ in range(240):
     action, state = model.predict(obs, state=state, mask=done)
+    # action = 0
     obs, reward , done, info = env.step(action)
 # env.write_outputs(inc_rl_agents=False)
 

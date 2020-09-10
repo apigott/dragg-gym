@@ -40,7 +40,7 @@ class DRAGGEnv(gym.Env):
 
     def _get_reward(self, obs):
         # self.agg.avg_load += 0.5*(self.agg.agg_load - self.agg.avg_load)
-        reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2
+        reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2 #+ 10*self.agg.reward_price[0]
         # reward = -1 * (self.agg.agg_load - self.agg.avg_load)**2
         return reward
 
