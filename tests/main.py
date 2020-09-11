@@ -45,20 +45,20 @@ class KerasPolicy(ActorCriticPolicy):
     def value(self, obs, state=None, mask=None):
         return self.sess.run(self.value_flat, {self.obs_ph: obs})
 
-model_name = 'penalizedRP'
+model_name = 'more_data2-10houses'
 
 # env = gym.make('dragg-v0')
 # model = SAC(MlpPolicy, env, verbose=1)
 env = DummyVecEnv([lambda: gym.make('dragg-v0')])
 
-model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log=".tensorboard_logs")
+model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log="tensorboard_logs")
 # model = SAC(MlpLnLstmPolicy, env, n_env=1, n_batch=1, n_steps=5000, verbose=1, tensorboard_log=".tensorboard_logs")
 # model_class = SAC
 # goal_selection_strategy = 'future'
 # model = HER('MlpLnLstmPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=goal_selection_strategy,
 #                                                 verbose=1)
 #
-model.learn(total_timesteps=5000, tb_log_name="random_agent")
+model.learn(total_timesteps=10000, tb_log_name=model_name)
 model.save(model_name)
 # model = PPO2.load(model_name)
 

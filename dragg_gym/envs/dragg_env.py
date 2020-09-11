@@ -28,19 +28,21 @@ class DRAGGEnv(gym.Env):
         self.action_space = spaces.Box(np.float32(np.array([self.MIN_PRICE])), np.float32(np.array([self.MAX_PRICE])))
         obs_low = np.array([0, # current load
                             0, # forecasted load
-                            0 # time of day
-                            # 0 # predicted load over next X hours
+                            0, # time of day
+                            0, # predicted load over next X hours
+                            -10 # weather trend
                             ], dtype=np.float32)
         obs_high = np.array([self.agg.config['community']['total_number_homes'][0] * 15, # current load
                                         self.agg.config['community']['total_number_homes'][0] * 15, # forecasted load
-                                        24 # time of day
-                                        # self.agg.config['community']['total_number_homes'][0] * 100, # predicted load over next X hours
+                                        24, # time of day
+                                        1, # precent max load for past x timesteps
+                                        10 # weather trend
                                         ], dtype=np.float32)
         self.observation_space = spaces.Box(obs_low, obs_high)
 
     def _get_reward(self, obs):
         # self.agg.avg_load += 0.5*(self.agg.agg_load - self.agg.avg_load)
-        reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2 #+ 10*self.agg.reward_price[0]
+        reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2 #+ 100*(self.agg.reward_price[0])**2
         # reward = -1 * (self.agg.agg_load - self.agg.avg_load)**2
         return reward
 
@@ -54,7 +56,7 @@ class DRAGGEnv(gym.Env):
         self.agg.collect_data()
 
     def _get_state(self):
-        return np.array([self.agg.agg_load, np.sum(self.agg.forecast_load), self.agg.timestep % self.agg.dt])
+        return np.array([self.agg.agg_load, np.sum(self.agg.forecast_load), self.agg.timestep % self.agg.dt, np.average(self.agg.tracked_loads[-4:]) / self.agg.max_load, self.agg.thermal_trend])
 
     def step(self, action): # done
         self.curr_step += 1
