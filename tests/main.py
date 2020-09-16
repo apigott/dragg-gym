@@ -9,7 +9,7 @@ from stable_baselines.common.policies import MlpPolicy, MlpLstmPolicy, MlpLnLstm
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-model_name = 'smaller_action_space-normalizedU'
+model_name = 'smaller_action_space-normalizedU_unbound'
 
 # env = gym.make('dragg-v0')
 env = DummyVecEnv([lambda: gym.make('dragg-v0')])
