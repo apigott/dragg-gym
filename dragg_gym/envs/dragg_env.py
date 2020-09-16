@@ -25,7 +25,11 @@ class DRAGGEnv(gym.Env):
         self.MIN_PRICE = -1.0
         self.MAX_PRICE = 1.0
         # self.action_space = spaces.Discrete(41)
-        self.action_space = spaces.Box(np.float32(np.array([self.MIN_PRICE])), np.float32(np.array([self.MAX_PRICE])))
+        action_low = np.array([-1
+                            ], dtype=np.float32)
+        action_high = np.array([1
+                            ], dtype=np.float32)
+        self.action_space = spaces.Box(action_low, action_high)
         obs_low = np.array([0, # current load
                             0, # forecasted load
                             0, # time of day
@@ -40,29 +44,29 @@ class DRAGGEnv(gym.Env):
                                         ], dtype=np.float32)
         self.observation_space = spaces.Box(obs_low, obs_high)
 
-    def _get_reward(self, obs):
+    def get_reward(self, obs):
         # self.agg.avg_load += 0.5*(self.agg.agg_load - self.agg.avg_load)
         reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2 #+ 100*(self.agg.reward_price[0])**2
         # reward = -1 * (self.agg.agg_load - self.agg.avg_load)**2
         return reward
 
-    def _take_action(self, action):
+    def take_action(self, action):
         self.action_episode_memory[self.curr_episode].append(action)
         # self.reward_price = self.MIN_PRICE + ((self.MAX_PRICE - self.MIN_PRICE) / (self.action_space.n - 1) * action)
         self.reward_price = action
-        self.agg.reward_price[0] = self.reward_price
+        self.agg.reward_price[0] = 0.09 * self.reward_price
         self.agg.redis_set_current_values()
-        self.agg._run_iteration()
+        self.agg.run_iteration()
         self.agg.collect_data()
 
-    def _get_state(self):
+    def get_state(self):
         return np.array([self.agg.agg_load, np.sum(self.agg.forecast_load), self.agg.timestep % self.agg.dt, np.average(self.agg.tracked_loads[-4:]) / self.agg.max_load, self.agg.thermal_trend])
 
     def step(self, action): # done
         self.curr_step += 1
-        self._take_action(action)
-        obs = self._get_state()
-        reward = self._get_reward(obs)
+        self.take_action(action)
+        obs = self.get_state()
+        reward = self.get_reward(obs)
         self.agg.write_outputs(inc_rl_agents=False) # how to do this better for DummyVecEnv??
         done = False
         return obs, reward, done, {}
@@ -76,7 +80,7 @@ class DRAGGEnv(gym.Env):
         self.agg.reset_baseline_data()
         self.agg.avg_load = 0
 
-        obs = self._get_state()
+        obs = self.get_state()
         return obs
 
     def _render(self, mode: str = "human", close: bool = False):
