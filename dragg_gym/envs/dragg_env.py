@@ -21,32 +21,53 @@ class DRAGGEnv(gym.Env):
         self.curr_episode = -1
         self.curr_step = -1
         self.action_episode_memory = []
+        self.prev_action = 0
 
-        self.MIN_PRICE = -1.0
-        self.MAX_PRICE = 1.0
-        # self.action_space = spaces.Discrete(41)
         action_low = np.array([-1
                             ], dtype=np.float32)
         action_high = np.array([1
                             ], dtype=np.float32)
         self.action_space = spaces.Box(action_low, action_high)
-        obs_low = np.array([0, # current load
-                            0, # forecasted load
-                            0, # time of day
-                            0, # predicted load over next X hours
-                            -10 # weather trend
+        # obs_low = np.array([0, # current load
+        #                     0, # forecasted load
+        #                     0, # time of day
+        #                     0, # predicted load over next X hours
+        #                     -10, # weather trend
+        #                     -1, # max daily temp
+        #                     22, # min daily temp
+        #                     ], dtype=np.float32)
+        # obs_high = np.array([self.agg.config['community']['total_number_homes'][0] * 15, # current load
+        #                                 self.agg.config['community']['total_number_homes'][0] * 15, # forecasted load
+        #                                 24, # time of day
+        #                                 1, # precent max load for past x timesteps
+        #                                 10, # weather trend
+        #                                 -1, # max daily temp
+        #                                 22, # min daily temp
+        #                                 ], dtype=np.float32)
+        obs_low = np.array([-1, # current load
+                            -1, # forecasted load
+                            -1, # time of day
+                            -1, # predicted load over next X hours
+                            -1, # weather trend
+                            -1, # max daily temp
+                            -1, # min daily temp
+                            -1 # previous action
                             ], dtype=np.float32)
-        obs_high = np.array([self.agg.config['community']['total_number_homes'][0] * 15, # current load
-                                        self.agg.config['community']['total_number_homes'][0] * 15, # forecasted load
-                                        24, # time of day
-                                        1, # precent max load for past x timesteps
-                                        10 # weather trend
-                                        ], dtype=np.float32)
+        obs_high = np.array([1, # current load
+                            1, # forecasted load
+                            1, # time of day
+                            1, # precent max load for past x timesteps
+                            1, # weather trend
+                            1, # max daily temp
+                            1, # min daily temp
+                            1 # previous action
+                            ], dtype=np.float32)
         self.observation_space = spaces.Box(obs_low, obs_high)
 
     def get_reward(self, obs):
         # self.agg.avg_load += 0.5*(self.agg.agg_load - self.agg.avg_load)
-        reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2 #+ 100*(self.agg.reward_price[0])**2
+        reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2 - 0.25*(self.agg.agg_load - self.agg.prev_load)#+ 100*(self.agg.reward_price[0])**2
+        self.agg.prev_load = self.agg.agg_load
         # reward = -1 * (self.agg.agg_load - self.agg.avg_load)**2
         return reward
 
@@ -58,9 +79,25 @@ class DRAGGEnv(gym.Env):
         self.agg.redis_set_current_values()
         self.agg.run_iteration()
         self.agg.collect_data()
+        # self.agg.test_response()
+
 
     def get_state(self):
-        return np.array([self.agg.agg_load, np.sum(self.agg.forecast_load), self.agg.timestep % self.agg.dt, np.average(self.agg.tracked_loads[-4:]) / self.agg.max_load, self.agg.thermal_trend])
+        return np.array([2*(self.agg.agg_load/self.agg.config['community']['total_number_homes'][0] * 15) -1,
+                        2*(np.sum(self.agg.forecast_load)/self.agg.config['community']['total_number_homes'][0] * 15) -1,
+                        2*(self.agg.timestep % self.agg.dt)/24 -1,
+                        2*(np.average(self.agg.tracked_loads[-4:]) / self.agg.max_load) -1,
+                        2*(self.agg.thermal_trend - (-10))/20-1,
+                        2*(self.agg.max_daily_temp - (-1))/23-1,
+                        2*(self.agg.min_daily_temp - (-1))/23-1,
+                        self.prev_action])
+        # return np.array([(self.agg.agg_load/self.agg.config['community']['total_number_homes'][0] * 15),
+        #                 (np.sum(self.agg.forecast_load)/self.agg.config['community']['total_number_homes'][0] * 15),
+        #                 (self.agg.timestep % self.agg.dt),
+        #                 (np.average(self.agg.tracked_loads[-4:]) / self.agg.max_load),
+        #                 (self.agg.thermal_trend),
+        #                 (self.agg.max_daily_temp),
+        #                 (self.agg.min_daily_temp)])
 
     def step(self, action): # done
         self.curr_step += 1
