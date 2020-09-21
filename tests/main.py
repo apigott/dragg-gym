@@ -9,11 +9,10 @@ from stable_baselines.common.policies import MlpPolicy, MlpLstmPolicy, MlpLnLstm
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-model_name = 'known_waterdraws'
+model_name = '8hr'
 
 # env = gym.make('dragg-v0')
 env = DummyVecEnv([lambda: gym.make('dragg-v0')])
-
 model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log="tensorboard_logs")
 
 # model = SAC(MlpLnLstmPolicy, env, n_env=1, n_batch=1, n_steps=5000, verbose=1, tensorboard_log=".tensorboard_logs")
