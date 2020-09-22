@@ -9,6 +9,10 @@ import random
 class DRAGGEnv(gym.Env):
     def __init__(self):
         super(DRAGGEnv, self).__init__()
+        self.track_reward = 0
+        self.min_reward = 0
+        self.max_reward = -1000
+        self.timestep = 0
         self.agg = Aggregator()
         self.agg.case = 'rl_agg'
         self.agg.avg_load = 30 # initialize setpoint
@@ -28,25 +32,12 @@ class DRAGGEnv(gym.Env):
         action_high = np.array([1
                             ], dtype=np.float32)
         self.action_space = spaces.Box(action_low, action_high)
-        # obs_low = np.array([0, # current load
-        #                     0, # forecasted load
-        #                     0, # time of day
-        #                     0, # predicted load over next X hours
-        #                     -10, # weather trend
-        #                     -1, # max daily temp
-        #                     22, # min daily temp
-        #                     ], dtype=np.float32)
-        # obs_high = np.array([self.agg.config['community']['total_number_homes'][0] * 15, # current load
-        #                                 self.agg.config['community']['total_number_homes'][0] * 15, # forecasted load
-        #                                 24, # time of day
-        #                                 1, # precent max load for past x timesteps
-        #                                 10, # weather trend
-        #                                 -1, # max daily temp
-        #                                 22, # min daily temp
-        #                                 ], dtype=np.float32)
         obs_low = np.array([-1, # current load
                             -1, # forecasted load
-                            -1, # time of day
+                            -1, # sin(time of day)
+                            -1, # cos(time of day)
+                            -1, # sin(week of year)
+                            -1, # cos(week of year)
                             -1, # predicted load over next X hours
                             -1, # weather trend
                             -1, # max daily temp
@@ -55,7 +46,10 @@ class DRAGGEnv(gym.Env):
                             ], dtype=np.float32)
         obs_high = np.array([1, # current load
                             1, # forecasted load
-                            1, # time of day
+                            1, # sin(time of day)
+                            1, # cos(time of day)
+                            1, # sin(week of year)
+                            1, # cos(week of year)
                             1, # precent max load for past x timesteps
                             1, # weather trend
                             1, # max daily temp
@@ -66,7 +60,9 @@ class DRAGGEnv(gym.Env):
 
     def get_reward(self, obs):
         # self.agg.avg_load += 0.5*(self.agg.agg_load - self.agg.avg_load)
-        reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2 - 0.25*(self.agg.agg_load - self.agg.prev_load)#+ 100*(self.agg.reward_price[0])**2
+        reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2
+        reward = (reward + 140) / (-0.01 + 1120)
+        print("reward",self.reward)
         self.agg.prev_load = self.agg.agg_load
         # reward = -1 * (self.agg.agg_load - self.agg.avg_load)**2
         return reward
@@ -85,7 +81,10 @@ class DRAGGEnv(gym.Env):
     def get_state(self):
         return np.array([2*(self.agg.agg_load/self.agg.config['community']['total_number_homes'][0] * 15) -1,
                         2*(np.sum(self.agg.forecast_load)/self.agg.config['community']['total_number_homes'][0] * 15) -1,
-                        2*(self.agg.timestep % self.agg.dt)/24 -1,
+                        np.sin(3.14*(self.agg.timestep / self.agg.dt)/12),
+                        np.cos(3.14*(self.agg.timestep / self.agg.dt)/12),
+                        np.sin(3.14*(self.agg.timestep / (24 * self.agg.dt) / 7)/26),
+                        np.cos(3.14*(self.agg.timestep / (24 * self.agg.dt) / 7)/26),
                         2*(np.average(self.agg.tracked_loads[-4:]) / self.agg.max_load) -1,
                         2*(self.agg.thermal_trend - (-10))/20-1,
                         2*(self.agg.max_daily_temp - (-1))/23-1,
