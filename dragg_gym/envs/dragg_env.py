@@ -16,6 +16,7 @@ class DRAGGEnv(gym.Env):
         self.agg = Aggregator()
         self.agg.case = 'rl_agg'
         self.agg.avg_load = 30 # initialize setpoint
+        self.agg.all_rewards = []
 
         self.agg.set_value_permutations()
         self.agg.set_dummy_rl_parameters()
@@ -26,6 +27,7 @@ class DRAGGEnv(gym.Env):
         self.curr_step = -1
         self.action_episode_memory = []
         self.prev_action = 0
+        self.prev_action_list = np.zeros(12)
 
         action_low = np.array([-1
                             ], dtype=np.float32)
@@ -42,7 +44,8 @@ class DRAGGEnv(gym.Env):
                             -1, # weather trend
                             -1, # max daily temp
                             -1, # min daily temp
-                            -1 # previous action
+                            -1, # previous action
+                            -1, # rolling avg previous action
                             ], dtype=np.float32)
         obs_high = np.array([1, # current load
                             1, # forecasted load
@@ -54,7 +57,8 @@ class DRAGGEnv(gym.Env):
                             1, # weather trend
                             1, # max daily temp
                             1, # min daily temp
-                            1 # previous action
+                            1, # previous action
+                            1, # rolling avg previous action
                             ], dtype=np.float32)
         self.observation_space = spaces.Box(obs_low, obs_high)
 
@@ -73,17 +77,19 @@ class DRAGGEnv(gym.Env):
         # print("avg",avg_reward, "min", self.min_reward, "max", self.max_reward)
         self.agg.prev_load = self.agg.agg_load
         # reward = -1 * (self.agg.agg_load - self.agg.avg_load)**2
+        print(reward)
         return reward
 
     def take_action(self, action):
         self.action_episode_memory[self.curr_episode].append(action)
-        # self.reward_price = self.MIN_PRICE + ((self.MAX_PRICE - self.MIN_PRICE) / (self.action_space.n - 1) * action)
         self.reward_price = action
+        self.prev_action = self.agg.reward_price[0] / 0.09
+        self.prev_action_list[:-1] = self.prev_action_list[1:]
+        self.prev_action_list[-1] = self.prev_action
         self.agg.reward_price[0] = 0.09 * self.reward_price
         self.agg.redis_set_current_values()
         self.agg.run_iteration()
         self.agg.collect_data()
-        # self.agg.test_response()
 
 
     def get_state(self):
@@ -97,20 +103,15 @@ class DRAGGEnv(gym.Env):
                         2*(self.agg.thermal_trend - (-10))/20-1,
                         2*(self.agg.max_daily_temp - (-1))/23-1,
                         2*(self.agg.min_daily_temp - (-1))/23-1,
-                        self.prev_action])
-        # return np.array([(self.agg.agg_load/self.agg.config['community']['total_number_homes'][0] * 15),
-        #                 (np.sum(self.agg.forecast_load)/self.agg.config['community']['total_number_homes'][0] * 15),
-        #                 (self.agg.timestep % self.agg.dt),
-        #                 (np.average(self.agg.tracked_loads[-4:]) / self.agg.max_load),
-        #                 (self.agg.thermal_trend),
-        #                 (self.agg.max_daily_temp),
-        #                 (self.agg.min_daily_temp)])
+                        self.prev_action,
+                        np.average(self.prev_action_list)])
 
     def step(self, action): # done
         self.curr_step += 1
         self.take_action(action)
         obs = self.get_state()
         reward = self.get_reward(obs)
+        self.agg.all_rewards += [reward]
         self.agg.write_outputs(inc_rl_agents=False) # how to do this better for DummyVecEnv??
         done = False
         return obs, reward, done, {}
