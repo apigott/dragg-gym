@@ -10,7 +10,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-model_name = '6hr_sac-normalizedR'
+model_name = 'with_pv'
 
 env = gym.make('dragg-v0')
 print("default max env steps", env._max_episode_steps)
