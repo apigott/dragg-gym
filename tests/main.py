@@ -10,11 +10,11 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-model_name = '6hr_sac-10dayEp'
+model_name = '6hr_sac-normalizedR'
 
 env = gym.make('dragg-v0')
 print("default max env steps", env._max_episode_steps)
-env._max_episode_steps = 240
+env._max_episode_steps = 1000
 print("new max env steps", env._max_episode_steps)
 # env = DummyVecEnv([lambda: gym.make('dragg-v0')])
 # model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log="tensorboard_logs")
