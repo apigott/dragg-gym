@@ -10,7 +10,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-model_name = 'max_load2'
+model_name = '6hr_sac-normalizedR'
 
 env = gym.make('dragg-v0')
 print("default max env steps", env._max_episode_steps)
@@ -24,13 +24,13 @@ model = SAC(LnMlpPolicy, env, verbose=1, tensorboard_log="tensorboard_logs")
 # goal_selection_strategy = 'future'
 # model = HER('MlpLnLstmPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=goal_selection_strategy, verbose=1)
 
-model.learn(total_timesteps=5000, tb_log_name=model_name)
-model.save(model_name)
-# model = PPO2.load(model_name)
-# model.set_env(env)
-# for i in range(5):
-#     model.learn(total_timesteps=5000, tb_log_name=(model_name+str(i)))
-#     model.save(model_name+str(i))
+# model.learn(total_timesteps=5000, tb_log_name=model_name)
+# model.save(model_name)
+model = PPO2.load(model_name)
+model.set_env(env)
+for i in range(5):
+    model.learn(total_timesteps=5000, tb_log_name=(model_name+str(i)))
+    model.save(model_name+str(i))
 
 # obs = env.reset()
 # for _ in range(240):
