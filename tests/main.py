@@ -36,9 +36,11 @@ for i in range(5):
 
     data_dir = os.path.expanduser(os.environ.get('DATA_DIR','data'))
     config_file = os.path.join(data_dir, os.environ.get('CONFIG_FILE', 'config.toml'))
-    with open(config_file,'r+') as f:
+    with open(config_file,'r') as f:
         data = toml.load(f)
-        data['rl']['version'] = temp_name
+
+    data['rl']['version'] = temp_name
+    with open(config_file,'w') as f:
         toml.dump(data, f)
 
     env = gym.make('dragg-v0')
