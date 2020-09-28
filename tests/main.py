@@ -32,6 +32,8 @@ env._max_episode_steps = 1000
 for i in range(5):
 #     model.learn(total_timesteps=5000, tb_log_name=(model_name+str(i)))
 #     model.save(model_name+str(i))
+    temp_name = model_name+str(i)
+
     data_dir = os.path.expanduser(os.environ.get('DATA_DIR','data'))
     config_file = os.path.join(data_dir, os.environ.get('CONFIG_FILE', 'config.toml'))
     with open(config_file,'r+') as f:
@@ -41,7 +43,6 @@ for i in range(5):
 
     env = gym.make('dragg-v0')
 
-    temp_name = model_name+str(i)
     SAC.load(temp_name)
 
 # obs = env.reset()
