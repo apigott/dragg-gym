@@ -39,7 +39,7 @@ for i in range(5):
     with open(config_file,'r+') as f:
         data = toml.load(f)
         data['rl']['version'] = temp_name
-        toml.dump(dump, f)
+        toml.dump(data, f)
 
     env = gym.make('dragg-v0')
 
