@@ -45,7 +45,7 @@ for i in range(5):
 
     env = gym.make('dragg-v0')
 
-    SAC.load(temp_name)
+    model = SAC.load(temp_name)
 
 # obs = env.reset()
 # for _ in range(240):
