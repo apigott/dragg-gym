@@ -20,7 +20,7 @@ env._max_episode_steps = 1000
 # env = DummyVecEnv([lambda: gym.make('dragg-v0')])
 # model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log="tensorboard_logs")
 
-model = SAC(LnMlpPolicy, env, learning_rate=0.03 , verbose=1, tensorboard_log="tensorboard_logs")
+model = SAC(LnMlpPolicy, env, learning_rate=0.2 , verbose=1, tensorboard_log="tensorboard_logs")
 # model_class = SAC
 # goal_selection_strategy = 'future'
 # model = HER('MlpLnLstmPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=goal_selection_strategy, verbose=1)
