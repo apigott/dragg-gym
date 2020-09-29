@@ -13,17 +13,17 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-model_name = 'higher_alpha2'
+model_name = 'her_model'
 
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 # env = DummyVecEnv([lambda: gym.make('dragg-v0')])
 # model = PPO2(MlpLnLstmPolicy, env, nminibatches=1, verbose=1, tensorboard_log="tensorboard_logs")
 
-model = SAC(LnMlpPolicy, env, learning_rate=0.2 , verbose=1, tensorboard_log="tensorboard_logs")
-# model_class = SAC
-# goal_selection_strategy = 'future'
-# model = HER('MlpLnLstmPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=goal_selection_strategy, verbose=1)
+# model = SAC(LnMlpPolicy, env, learning_rate=0.2 , verbose=1, tensorboard_log="tensorboard_logs")
+model_class = SAC
+goal_selection_strategy = 'future'
+model = HER('MlpLnLstmPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=goal_selection_strategy, verbose=1)
 
 model.learn(total_timesteps=5000, tb_log_name=model_name)
 model.save(model_name)
@@ -32,8 +32,8 @@ model.save(model_name)
 
 obs = env.reset()
 for _ in range(240):
-    # action, _state = model.predict(obs)
-    action = 0
+    action, _state = model.predict(obs)
+    # action = 0
     obs, reward, done, info = env.step(action)
 env.agg.write_outputs(inc_rl_agents=False)
 
