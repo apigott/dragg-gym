@@ -18,11 +18,11 @@ model_name = 'higher_alpha03'
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 
-# model = SAC(LnMlpPolicy, env, learning_rate=0.2 , verbose=1, tensorboard_log="tensorboard_logs")
-# model.learn(total_timesteps=5000, tb_log_name=model_name)
-# model.save(model_name)
-model = SAC.load(model_name)
-model.set_env(env)
+model = SAC(LnMlpPolicy, env, learning_rate=0.03 , verbose=1, tensorboard_log="tensorboard_logs")
+model.learn(total_timesteps=5000, tb_log_name=model_name)
+model.save(model_name)
+# model = SAC.load(model_name)
+# model.set_env(env)
 
 obs = env.reset()
 for _ in range(240):
