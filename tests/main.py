@@ -13,7 +13,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-model_name = 'higher_alpha03'
+model_name = 'higher_alpha2'
 
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
