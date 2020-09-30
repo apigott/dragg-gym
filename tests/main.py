@@ -13,7 +13,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-model_name = 'higher_alpha'
+model_name = 'higher_alpha03'
 
 # env = gym.make('dragg-v0')
 # env._max_episode_steps = 1000
@@ -21,7 +21,7 @@ model_name = 'higher_alpha'
 # model = SAC(LnMlpPolicy, env, learning_rate=0.03 , verbose=1, tensorboard_log="tensorboard_logs")
 # model.learn(total_timesteps=5000, tb_log_name=model_name)
 # model.save(model_name)
-# model = SAC.load(model_name)
+model = SAC.load(model_name)
 # model.set_env(env)
 #
 # obs = env.reset()
@@ -31,9 +31,9 @@ model_name = 'higher_alpha'
 #     obs, reward, done, info = env.step(action)
 # env.agg.write_outputs(inc_rl_agents=False)
 
-alphas = [1,5,7,9]
-for a in alphas:
-    temp_name = model_name+"0"+str(i)
+# alphas = [1,5,7,9]
+for i in range(5):
+    temp_name = model_name+"-"+str(i)
 
     data_dir = os.path.expanduser(os.environ.get('DATA_DIR','data'))
     config_file = os.path.join(data_dir, os.environ.get('CONFIG_FILE', 'config.toml'))
@@ -45,7 +45,7 @@ for a in alphas:
         toml.dump(data, f)
 
     env = gym.make('dragg-v0')
-    model = SAC(LnMlpPolicy, env, learning_rate=0.03 , verbose=1, tensorboard_log="tensorboard_logs")
+    # model = SAC(LnMlpPolicy, env, learning_rate=0.03 , verbose=1, tensorboard_log="tensorboard_logs")
     model.learn(total_timesteps=5000, tb_log_name=(temp_name))
     model.save(temp_name)
     # SAC.load(temp_name)
