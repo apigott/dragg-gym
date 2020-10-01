@@ -18,9 +18,9 @@ model_name = 'with_pv_batt'
 env = gym.make('dragg-v0')
 # env._max_episode_steps = 1000
 
-# model = SAC(LnMlpPolicy, env , verbose=1, tensorboard_log="tensorboard_logs")
-# model.learn(total_timesteps=5000, tb_log_name=model_name)
-# model.save(model_name)
+model = SAC(LnMlpPolicy, env , verbose=1, tensorboard_log="tensorboard_logs")
+model.learn(total_timesteps=5000, tb_log_name=model_name)
+model.save(model_name)
 
 # model = SAC.load(model_name)
 # model.set_env(env)
