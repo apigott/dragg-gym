@@ -46,6 +46,7 @@ class DRAGGEnv(gym.Env):
                             -1, # min daily temp
                             -1, # previous action
                             -1, # rolling avg previous action
+                            -1, # max daily GHI
                             ], dtype=np.float32)
         obs_high = np.array([1, # current load
                             1, # forecasted load
@@ -59,13 +60,14 @@ class DRAGGEnv(gym.Env):
                             1, # min daily temp
                             1, # previous action
                             1, # rolling avg previous action
+                            1, # max daily GHI
                             ], dtype=np.float32)
         self.observation_space = spaces.Box(obs_low, obs_high)
 
     def get_reward(self, obs):
         # self.agg.avg_load += 0.5*(self.agg.agg_load - self.agg.avg_load)
         sp = np.clip(self.agg.agg_setpoint, 45, 60)
-        reward = -1*(self.agg.agg_setpoint - self.agg.agg_load)**2
+        reward = -1*(sp - self.agg.agg_load)**2
         reward = (reward + 160) / (-0.1 + 1000)
         # reward = -1*(self.agg.agg_load)**2
         # reward = (reward + 3724) / (-735 + 7084)
@@ -106,7 +108,8 @@ class DRAGGEnv(gym.Env):
                         2*(self.agg.max_daily_temp - (-1))/23-1,
                         2*(self.agg.min_daily_temp - (-1))/23-1,
                         self.prev_action,
-                        np.average(self.prev_action_list)])
+                        np.average(self.prev_action_list),
+                        self.agg.max_daily_ghi /400 - 1])
 
     def step(self, action): # done
         self.curr_step += 1
