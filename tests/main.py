@@ -14,7 +14,7 @@ from stable_baselines import PPO2, A2C, SAC, HER
 
 log = Logger("main")
 
-model_name = 'alpha03-clipped-v2'
+model_name = 'alpha03-plus-peak'
 
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
