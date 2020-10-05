@@ -14,7 +14,7 @@ from stable_baselines import PPO2, A2C, SAC, HER
 
 log = Logger("main")
 
-model_name = 'alpha03-peak-valley'
+model_name = 'alpha03-neg-rp'
 
 data_dir = os.path.expanduser(os.environ.get('DATA_DIR','data'))
 config_file = os.path.join(data_dir, os.environ.get('CONFIG_FILE', 'config.toml'))

@@ -92,7 +92,7 @@ class DRAGGEnv(gym.Env):
         self.prev_action = self.agg.reward_price[0] / 0.09
         self.prev_action_list[:-1] = self.prev_action_list[1:]
         self.prev_action_list[-1] = self.prev_action
-        self.agg.reward_price[0] = 0.09 * self.reward_price
+        self.agg.reward_price[0] = 0.15 * self.reward_price
         self.agg.redis_set_current_values()
         self.agg.run_iteration()
         self.agg.collect_data()
