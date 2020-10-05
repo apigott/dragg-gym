@@ -2,7 +2,6 @@ import os
 import toml
 
 import dragg
-from dragg.reformat import Reformat
 import gym
 import dragg_gym
 from dragg.logger import Logger
@@ -15,12 +14,12 @@ from stable_baselines import PPO2, A2C, SAC, HER
 
 log = Logger("main")
 
-model_name = 'alpha03-clipped'
+model_name = 'alpha03-stable'
 
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 
-model = SAC(LnMlpPolicy, env , verbose=1, tensorboard_log="tensorboard_logs")
+model = SAC(LnMlpPolicy, env, learning_rate=0.03, verbose=1, tensorboard_log="tensorboard_logs")
 model.learn(total_timesteps=5000, tb_log_name=model_name)
 model.save(model_name)
 

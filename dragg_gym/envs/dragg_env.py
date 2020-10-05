@@ -66,7 +66,8 @@ class DRAGGEnv(gym.Env):
 
     def get_reward(self, obs):
         # self.agg.avg_load += 0.5*(self.agg.agg_load - self.agg.avg_load)
-        sp = np.clip(self.agg.agg_setpoint, 45, 60)
+        # sp = np.clip(self.agg.agg_setpoint, 45, 60)
+        sp = 50
         reward = -1*(sp - self.agg.agg_load)**2
         reward = (reward + 160) / (-0.1 + 1000)
         # reward = -1*(self.agg.agg_load)**2
