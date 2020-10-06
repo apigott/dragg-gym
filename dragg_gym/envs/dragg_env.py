@@ -87,12 +87,13 @@ class DRAGGEnv(gym.Env):
         return reward
 
     def take_action(self, action):
+        self.max_rp = 0.02
         self.action_episode_memory[self.curr_episode].append(action)
         self.reward_price = action
-        self.prev_action = self.agg.reward_price[0] / 0.09
+        self.prev_action = self.agg.reward_price[0] / self.max_rp
         self.prev_action_list[:-1] = self.prev_action_list[1:]
         self.prev_action_list[-1] = self.prev_action
-        self.agg.reward_price[0] = 0.09 * self.reward_price
+        self.agg.reward_price[0] = self.max_rp * self.reward_price
         self.agg.redis_set_current_values()
         self.agg.run_iteration()
         self.agg.collect_data()
