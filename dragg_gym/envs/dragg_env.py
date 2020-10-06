@@ -69,7 +69,7 @@ class DRAGGEnv(gym.Env):
         # sp = np.clip(self.agg.agg_setpoint, 45, 60)
         # sp = 50
         sp = self.agg.agg_setpoint
-        reward = -1*(sp - self.agg.agg_load)**2 - 15*np.clip((self.agg.max_load - 60),0,None) - 15*np.clip((45 - self.agg.min_load),0,None)
+        reward = -1*(sp - self.agg.agg_load)**2 - 15*np.clip((self.agg.max_load - 60),0,None)
         reward = (reward + 160) / (1000)
         # reward = -1*(self.agg.agg_load)**2
         # reward = (reward + 3724) / (-735 + 7084)
