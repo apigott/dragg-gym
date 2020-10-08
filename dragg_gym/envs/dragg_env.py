@@ -10,7 +10,7 @@ class DRAGGEnv(gym.Env):
     def __init__(self):
         super(DRAGGEnv, self).__init__()
         self.track_reward = 0
-        self.min_reward = 0
+        self.min_reward = 0 # random initializations for normalization
         self.max_reward = -1000
         self.timestep = 0
         self.agg = Aggregator()
@@ -93,6 +93,7 @@ class DRAGGEnv(gym.Env):
         self.prev_action = self.agg.reward_price[0] / self.max_rp
         self.prev_action_list[:-1] = self.prev_action_list[1:]
         self.prev_action_list[-1] = self.prev_action
+        self.agg.tracked_reward_price = self.max_rp * np.average(self.prev_action_list)
         self.agg.reward_price[0] = self.max_rp * self.reward_price
         self.agg.redis_set_current_values()
         self.agg.run_iteration()
