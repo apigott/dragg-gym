@@ -40,13 +40,15 @@ class DRAGGEnv(gym.Env):
                             -1, # cos(time of day)
                             -1, # sin(week of year)
                             -1, # cos(week of year)
-                            -1, # predicted load over next X hours
+                            -1, # precent max load for past x timesteps
                             -1, # weather trend
                             -1, # max daily temp
                             -1, # min daily temp
                             -1, # previous action
                             -1, # rolling avg previous action
                             -1, # max daily GHI
+                            -1, # current max load
+                            -1, # current setpoint
                             ], dtype=np.float32)
         obs_high = np.array([1, # current load
                             1, # forecasted load
@@ -61,6 +63,8 @@ class DRAGGEnv(gym.Env):
                             1, # previous action
                             1, # rolling avg previous action
                             1, # max daily GHI
+                            1, # current max_load
+                            1, # current setpoint
                             ], dtype=np.float32)
         self.observation_space = spaces.Box(obs_low, obs_high)
 
@@ -113,7 +117,9 @@ class DRAGGEnv(gym.Env):
                         2*(self.agg.min_daily_temp - (-1))/23-1,
                         self.prev_action,
                         np.average(self.prev_action_list),
-                        self.agg.max_daily_ghi /400 - 1])
+                        self.agg.max_daily_ghi / 400 - 1,
+                        (np.clip(self.agg.max_load, 60, None) - 80) / 40,
+                        2*(np.average(self.agg.agg_setpoint) / self.agg.max_load) -1])
 
     def step(self, action): # done
         self.curr_step += 1
