@@ -73,7 +73,7 @@ class DRAGGEnv(gym.Env):
         # sp = np.clip(self.agg.agg_setpoint, 45, 60)
         # sp = 50
         sp = self.agg.agg_setpoint
-        reward = -1*(sp - self.agg.agg_load)**2 - 15*np.clip((self.agg.max_load - 60),0,None)
+        reward = -1*(sp - self.agg.agg_load)**2 - 15*np.clip((self.agg.max_load - 50),0,None)
         reward = (reward + 160) / (1000)
         # reward = -1*(self.agg.agg_load)**2
         # reward = (reward + 3724) / (-735 + 7084)
@@ -98,9 +98,8 @@ class DRAGGEnv(gym.Env):
         self.prev_action_list[:-1] = self.prev_action_list[1:]
         self.prev_action_list[-1] = self.prev_action
         self.agg.tracked_reward_price = self.max_rp * np.average(self.prev_action_list)
-        print("HERE",self.agg.tracked_reward_price)
         self.agg.reward_price[0] = self.max_rp * self.reward_price
-        self.agg.reward_price[1:] = self.agg.tracked_reward_price
+        # self.agg.reward_price[1:] = self.agg.tracked_reward_price
         self.agg.redis_set_current_values()
         self.agg.run_iteration()
         self.agg.collect_data()
