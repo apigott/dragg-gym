@@ -13,7 +13,7 @@ from stable_baselines import PPO2, A2C, SAC, HER
 
 log = Logger("main")
 
-model_name = 'test'
+model_name = 'test-wd-v2'
 
 data_dir = os.path.expanduser(os.environ.get('DATA_DIR','data'))
 config_file = os.path.join(data_dir, os.environ.get('CONFIG_FILE', 'config.toml'))
