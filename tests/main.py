@@ -13,7 +13,7 @@ from stable_baselines import PPO2, A2C, SAC, HER
 
 log = Logger("main")
 
-model_name = 'timed-wd-v3'
+model_name = 'new-wd'
 
 data_dir = os.path.expanduser(os.environ.get('DATA_DIR','data'))
 config_file = os.path.join(data_dir, os.environ.get('CONFIG_FILE', 'config.toml'))
@@ -31,391 +31,39 @@ model = SAC(LnMlpPolicy, env, learning_rate=0.03, verbose=1, tensorboard_log="te
 model.learn(total_timesteps=5000, tb_log_name=model_name)
 model.save(model_name)
 
-# model = SAC.load('more_data')
+# model = SAC.load(model_name)
 # model.set_env(env)
 
 obs = env.reset()
-for _ in range(240):
-    action, _state = model.predict(obs)
-    # action = 0
-    obs, reward, done, info = env.step(action)
-
-model_name = "dn-" + model_name
-
-obs = env.reset()
-for _ in range(240):
+for _ in range(96):
     # action, _state = model.predict(obs)
     action = 0
     obs, reward, done, info = env.step(action)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+model_name = "dn-" + model_name
 data['rl']['version'] = [model_name]# + data['rl']['version']
 with open(config_file,'w') as f:
     toml.dump(data, f)
 
 env = gym.make('dragg-v0')
-env._max_episode_steps = 1000
-
 obs = env.reset()
 for _ in range(240):
     # action, _state = model.predict(obs)
     action = 0
     obs, reward, done, info = env.step(action)
+
+# data['rl']['version'] = [model_name]# + data['rl']['version']
+# with open(config_file,'w') as f:
+#     toml.dump(data, f)
+#
+# env = gym.make('dragg-v0')
+# env._max_episode_steps = 1000
+#
+# obs = env.reset()
+# for _ in range(240):
+#     # action, _state = model.predict(obs)
+#     action = 0
+#     obs, reward, done, info = env.step(action)
 
 # alphas = [3,5,7,9]
 # for i in range(5):
