@@ -31,7 +31,7 @@ class DRAGGEnv(gym.Env):
         self.n_min_reward = -0.5
         self.n_max_reward = 0.5
         self.n_avg_reward = 0
-        self.lambda = 10
+        self.lam = 10
 
         action_low = np.array([-1
                             ], dtype=np.float32)
@@ -74,7 +74,7 @@ class DRAGGEnv(gym.Env):
 
     def get_reward(self, obs):
         sp = self.agg.agg_setpoint
-        reward = -1*(sp - self.agg.agg_load)**2 - self.lambda*np.clip((self.agg.max_load - 35),0,None)
+        reward = -1*(sp - self.agg.agg_load)**2 - self.lam*np.clip((self.agg.max_load - 35),0,None)
         reward = (reward - self.n_avg_reward) / (self.n_max_reward - self.n_min_reward)
         self.track_reward += reward
         if reward < self.min_reward:
