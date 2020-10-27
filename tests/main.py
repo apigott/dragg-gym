@@ -20,7 +20,7 @@ env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 
 for l in [8, 12, 15, 20]:
-    env.lambda = l
+    env.lam = l
     env.reset()
 
     model_name = f"lambda{l}"
