@@ -28,6 +28,10 @@ class DRAGGEnv(gym.Env):
         self.action_episode_memory = []
         self.prev_action = 0
         self.prev_action_list = np.zeros(12)
+        self.n_min_reward = -0.5
+        self.n_max_reward = 0.5
+        self.n_avg_reward = 0
+        self.lambda = 10
 
         action_low = np.array([-1
                             ], dtype=np.float32)
@@ -69,26 +73,17 @@ class DRAGGEnv(gym.Env):
         self.observation_space = spaces.Box(obs_low, obs_high)
 
     def get_reward(self, obs):
-        # self.agg.avg_load += 0.5*(self.agg.agg_load - self.agg.avg_load)
-        # sp = np.clip(self.agg.agg_setpoint, 45, 60)
-        # sp = 50
         sp = self.agg.agg_setpoint
-        reward = -1*(sp - self.agg.agg_load)**2 - 10*np.clip((self.agg.max_load - 35),0,None)
-        reward = ((reward + 50) / (500) - (-0.67)) / (0.1+4) #v1
-        reward = (reward + 0.1) / (0.18 - (-2.98)) #v3
-        # reward = -1*(self.agg.agg_load)**2
-        # reward = (reward + 3724) / (-735 + 7084)
+        reward = -1*(sp - self.agg.agg_load)**2 - self.lambda*np.clip((self.agg.max_load - 35),0,None)
+        reward = (reward - self.n_avg_reward) / (self.n_max_reward - self.n_min_reward)
         self.track_reward += reward
         if reward < self.min_reward:
             self.min_reward = reward
         if reward > self.max_reward:
             self.max_reward = reward
         self.timestep += 1
-        avg_reward = self.track_reward / self.timestep
-        # print("avg",avg_reward, "min", self.min_reward, "max", self.max_reward)
+        self.avg_reward = self.track_reward / self.timestep
         self.agg.prev_load = self.agg.agg_load
-        # reward = -1 * (self.agg.agg_load - self.agg.avg_load)**2
-        # print(reward)
         return reward
 
     def take_action(self, action):
