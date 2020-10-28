@@ -135,6 +135,7 @@ class DRAGGEnv(gym.Env):
 
         self.agg.setup_rl_agg_run()
         self.agg.reset_baseline_data()
+        self.agg._import_config()
         self.agg.avg_load = 0
 
         obs = self.get_state()
