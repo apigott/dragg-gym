@@ -19,10 +19,11 @@ log = Logger("main")
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 
-for l in [8]:
-    env.lam = l
+for l in [8, 10, 12, 20]:
+    env.agg.lam = l
 
-    model_name = f"lambda{str(l)}"
+    # model_name = f"lambda{str(l)}"
+    model_name = "test"
     log.logger.info(f"Model name set to: f{model_name}")
 
     env.agg.version = "dn-" + model_name
@@ -32,10 +33,10 @@ for l in [8]:
     for _ in range(10):
         action = 0
         obs, reward, done, info = env.step(action)
-    env.n_max_reward = env.max_reward
-    env.n_min_reward = env.min_reward
-    env.n_avg_reward = env.avg_reward
-    log.logger.info([f"Normalizing the RL agent against: Max Reward = {str(env.n_max_reward)}, Min Reward = {str(env.n_min_reward)}, Avg Reward = {str(env.n_avg_reward)}"])
+    max_reward = env.max_reward
+    min_reward = env.min_reward
+    avg_reward = env.avg_reward
+    log.logger.info([f"Normalizing the RL agent against: Max Reward = {str(max_reward)}, Min Reward = {str(min_reward)}, Avg Reward = {str(avg_reward)}"])
 
     if 'rl' in run:
         env.agg.version = model_name
@@ -49,6 +50,9 @@ for l in [8]:
 
         elif mode == 'train':
             env.reset()
+            env.agg.n_max_reward = max_reward
+            env.agg.n_min_reward = min_reward
+            env.agg.n_avg_reward = avg_reward
             model = SAC(LnMlpPolicy, env, learning_rate=0.03, verbose=1, tensorboard_log="tensorboard_logs")
             model.learn(total_timesteps=5000, tb_log_name=model_name)
             model.save(model_name)

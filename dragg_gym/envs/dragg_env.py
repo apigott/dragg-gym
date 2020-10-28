@@ -11,7 +11,7 @@ class DRAGGEnv(gym.Env):
         super(DRAGGEnv, self).__init__()
         self.track_reward = 0
         self.min_reward = 0 # random initializations for normalization
-        self.max_reward = -1000
+        self.max_reward = -100000
         self.timestep = 0
         self.agg = Aggregator()
         self.agg.case = 'rl_agg'
@@ -28,10 +28,10 @@ class DRAGGEnv(gym.Env):
         self.action_episode_memory = []
         self.prev_action = 0
         self.prev_action_list = np.zeros(12)
-        self.n_min_reward = -0.5
-        self.n_max_reward = 0.5
-        self.n_avg_reward = 0
-        self.lam = 10
+        self.agg.n_min_reward = -0.5
+        self.agg.n_max_reward = 0.5
+        self.agg.n_avg_reward = 0
+        self.agg.lam = 10
 
         action_low = np.array([-1
                             ], dtype=np.float32)
@@ -74,8 +74,8 @@ class DRAGGEnv(gym.Env):
 
     def get_reward(self, obs):
         sp = self.agg.agg_setpoint
-        reward = -1*(sp - self.agg.agg_load)**2 - self.lam*np.clip((self.agg.max_load - 35),0,None)
-        reward = (reward - self.n_avg_reward) / (self.n_max_reward - self.n_min_reward)
+        reward = -1*(sp - self.agg.agg_load)**2 - self.agg.lam*np.clip((self.agg.max_load - 125),0,None)
+        reward = (reward - self.agg.n_avg_reward) / (self.agg.n_max_reward - self.agg.n_min_reward)
         self.track_reward += reward
         if reward < self.min_reward:
             self.min_reward = reward
