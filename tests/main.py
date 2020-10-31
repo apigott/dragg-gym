@@ -11,7 +11,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['dn',]
+run = ['rl',]
 mode = 'train' # or load
 num_steps = 240
 
@@ -23,14 +23,14 @@ env._max_episode_steps = 1000
 for l in [10]:
     # env.agg.lam = l
 
-    model_name = "test"
+    model_name = "100houses"
     log.logger.info(f"Model name set to: f{model_name}")
 
     env.agg.version = "dn-" + model_name
 
     env.reset()
     log.logger.info("Begining normalization process for reward function.")
-    for _ in range(10):
+    for _ in range(50):
         action = 0
         obs, reward, done, info = env.step(action)
     max_reward = env.max_reward

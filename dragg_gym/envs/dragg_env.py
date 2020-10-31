@@ -74,8 +74,10 @@ class DRAGGEnv(gym.Env):
 
     def get_reward(self, obs):
         sp = self.agg.agg_setpoint
-        reward = -1*(sp - self.agg.agg_load)**2 - self.agg.lam*np.clip((self.agg.max_load - 6),0,None)
+        reward = -1*(sp - self.agg.agg_load)**2 - self.agg.lam*np.clip((self.agg.max_load - 60),0,None)
+        print("REWARD BEFORE NORM", reward)
         reward = (reward - self.agg.n_avg_reward) / (self.agg.n_max_reward - self.agg.n_min_reward)
+        print("REWARD AFTER NORM", reward)
         self.track_reward += reward
         if reward < self.min_reward:
             self.min_reward = reward
@@ -87,6 +89,8 @@ class DRAGGEnv(gym.Env):
         return reward
 
     def take_action(self, action):
+        print("ACTION", action)
+        action = np.nan_to_num(action, -1,1)
         self.max_rp = 0.02
         self.action_episode_memory[self.curr_episode].append(action)
         self.reward_price = action
