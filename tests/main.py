@@ -20,11 +20,11 @@ log = Logger("main")
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 
-for l in [10]:
-    # env.agg.lam = l
+for l in [5, 10, 15]:
+    env.agg.lam = l
 
-    model_name = "test"
-    log.logger.info(f"Model name set to: f{model_name}")
+    model_name = f"lambda{l}"
+    log.logger.info(f"Model name set to: {model_name}")
 
     env.agg.version = "dn-" + model_name
 
