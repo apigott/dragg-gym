@@ -11,7 +11,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['rl',]
+run = ['dn','rl']
 mode = 'train' # or load
 num_steps = 240
 
@@ -23,7 +23,7 @@ env._max_episode_steps = 1000
 for l in [10]:
     # env.agg.lam = l
 
-    model_name = "100houses"
+    model_name = "test"
     log.logger.info(f"Model name set to: f{model_name}")
 
     env.agg.version = "dn-" + model_name
