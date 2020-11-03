@@ -32,6 +32,7 @@ class DRAGGEnv(gym.Env):
         self.agg.n_max_reward = 0.5
         self.agg.n_avg_reward = 0
         self.agg.lam = 10
+        self.agg.max_rp = 0.02
 
         action_low = np.array([-1
                             ], dtype=np.float32)
@@ -91,14 +92,14 @@ class DRAGGEnv(gym.Env):
     def take_action(self, action):
         print("ACTION", action)
         action = np.nan_to_num(action, -1,1)
-        self.max_rp = 0.02
+
         self.action_episode_memory[self.curr_episode].append(action)
         self.reward_price = action
-        self.prev_action = self.agg.reward_price[0] / self.max_rp
+        self.prev_action = self.agg.reward_price[0] / self.agg.max_rp
         self.prev_action_list[:-1] = self.prev_action_list[1:]
         self.prev_action_list[-1] = self.prev_action
-        self.agg.tracked_reward_price = self.max_rp * np.average(self.prev_action_list)
-        self.agg.reward_price[0] = self.max_rp * self.reward_price
+        self.agg.tracked_reward_price = self.agg.max_rp * np.average(self.prev_action_list)
+        self.agg.reward_price[0] = self.agg.max_rp * self.reward_price
         # self.agg.reward_price[1:] = self.agg.tracked_reward_price
         self.agg.redis_set_current_values()
         self.agg.run_iteration()
