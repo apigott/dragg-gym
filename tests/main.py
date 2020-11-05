@@ -11,9 +11,9 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['dn','rl']
+run = ['rl', 'dn', 'tou']
 mode = 'train' # or load
-num_steps = 240
+num_steps = 1000
 
 log = Logger("main")
 
@@ -22,10 +22,11 @@ env._max_episode_steps = 1000
 
 # for l in [5, 10, 15]:
 #     env.agg.lam = l
-for rp in [1,5,12]:
-    env.agg.max_rp = 0.01*rp
-	
-    model_name = f"rp{rp}"
+for _ in [1]:
+    env.agg.lam = 5
+    env.agg.max_rp = 0.02
+
+    model_name = f"30min-test-pv"
     log.logger.info(f"Model name set to: {model_name}")
 
     env.agg.version = "dn-" + model_name
@@ -72,20 +73,13 @@ for rp in [1,5,12]:
             action = 0
             obs, reward, done, info = env.step(action)
 
-    # if 'tou' in run:
-    #     env.agg.version = "tou-" + model_name
-    #     data['rl']['utility']['base_price'] = 0.07
-    #     data['rl']['utility']['tou_enabled'] = True
-    #     with open(config_file,'w') as f:
-    #         toml.dump(data, f)
-    #
-    #     obs = env.reset()
-    #     for _ in range(num_steps):
-    #         action = 0
-    #         obs, reward, done, info = env.step(action)
-    #
-    #     # reset to the non-TOU structure
-    #     data['rl']['utility']['base_price'] = 0.10
-    #     data['rl']['utility']['tou_enabled'] = False
-    #     with open(config_file,'w') as f:
-    #         toml.dump(data, f)
+    if 'tou' in run:
+        env.agg.version = "tou-" + model_name
+        env.agg.config['rl']['utility']['tou_enabled'] = True
+        env.agg.config['rl']['utility']['base_price'] = 0.07
+        env.agg._build_tou_price()
+
+        obs = env.reset()
+        for _ in range(num_steps):
+            action = 0
+            obs, reward, done, info = env.step(action)
