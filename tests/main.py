@@ -11,7 +11,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['rl', 'dn', 'tou']
+run = ['dn', 'rl', 'tou']
 mode = 'train' # or load
 num_steps = 1000
 
@@ -20,13 +20,11 @@ log = Logger("main")
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 
-# for l in [5, 10, 15]:
-#     env.agg.lam = l
 for _ in [1]:
     env.agg.lam = 7
     env.agg.max_rp = 0.02
 
-    model_name = f"neg-penalty"
+    model_name = f"abs"
     log.logger.info(f"Model name set to: {model_name}")
 
     env.agg.version = "dn-" + model_name
