@@ -23,10 +23,10 @@ env._max_episode_steps = 1000
 # for l in [5, 10, 15]:
 #     env.agg.lam = l
 for _ in [1]:
-    env.agg.lam = 5
+    env.agg.lam = 7
     env.agg.max_rp = 0.02
 
-    model_name = f"30min-test-pv"
+    model_name = f"neg-penalty"
     log.logger.info(f"Model name set to: {model_name}")
 
     env.agg.version = "dn-" + model_name
