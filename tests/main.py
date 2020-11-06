@@ -11,7 +11,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['dn', 'rl']
+run = ['dn', 'rl', 'tou']
 mode = 'load' # or load
 num_steps = 1000
 
@@ -20,11 +20,11 @@ log = Logger("main")
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 
-for _ in [1]:
-    env.agg.lam = 7
+for l in [0,1,2]:
+    env.agg.lam = l
     env.agg.max_rp = 0.02
 
-    model_name = f"2-pv-08cents"
+    model_name = f"lam{l}-const"
     log.logger.info(f"Model name set to: {model_name}")
 
     env.agg.version = "dn-" + model_name
