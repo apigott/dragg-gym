@@ -11,8 +11,8 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['dn', 'rl', 'tou']
-mode = 'train' # or load
+run = ['dn', 'rl']
+mode = 'load' # or load
 num_steps = 1000
 
 log = Logger("main")
@@ -24,7 +24,7 @@ for _ in [1]:
     env.agg.lam = 7
     env.agg.max_rp = 0.02
 
-    model_name = f"abs"
+    model_name = f"2-pv-08cents"
     log.logger.info(f"Model name set to: {model_name}")
 
     env.agg.version = "dn-" + model_name
@@ -51,6 +51,7 @@ for _ in [1]:
             except:
                 log.logger.warn(f"No model was found for version {model_name}.",
                 f"Training a new model with name {model_name}.")
+                mode = 'train'
 
         elif mode == 'train':
             env.reset()
@@ -81,3 +82,7 @@ for _ in [1]:
         for _ in range(num_steps):
             action = 0
             obs, reward, done, info = env.step(action)
+
+        env.agg.config['rl']['utility']['tou_enabled'] = False
+        env.agg.config['rl']['utility']['base_price'] = 0.1
+        env.agg._build_tou_price()
