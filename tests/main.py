@@ -26,7 +26,7 @@ for t in [2]:
         env.agg.lam = l
         env.agg.max_rp = 0.02
 
-        model_name = f"alpha01"
+        model_name = f"30houses"
         log.logger.info(f"Model name set to: {model_name}")
 
         env.agg.version = "dn-" + model_name
@@ -57,7 +57,7 @@ for t in [2]:
 
             elif mode == 'train':
                 env.reset()
-                model = SAC(LnMlpPolicy, env, learning_rate=0.01, verbose=1, tensorboard_log="tensorboard_logs")
+                model = SAC(LnMlpPolicy, env, learning_rate=0.03, verbose=1, tensorboard_log="tensorboard_logs")
                 model.learn(total_timesteps=5000, tb_log_name=model_name)
                 model.save(model_name)
 
