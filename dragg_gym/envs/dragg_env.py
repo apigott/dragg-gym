@@ -113,14 +113,14 @@ class DRAGGEnv(gym.Env):
                         np.cos(3.14*(self.agg.timestep / self.agg.dt)/12),
                         np.sin(3.14*(self.agg.timestep / (24 * self.agg.dt) / 7)/26),
                         np.cos(3.14*(self.agg.timestep / (24 * self.agg.dt) / 7)/26),
-                        2*(np.average(self.agg.tracked_loads[-4:]) / self.agg.max_load) -1,
+                        2*(np.average(self.agg.tracked_loads[-4:]) / self.agg.max_poss_load) -1,
                         2*(self.agg.thermal_trend - (-10))/20-1,
                         2*(self.agg.max_daily_temp - (-1))/23-1,
                         2*(self.agg.min_daily_temp - (-1))/23-1,
                         self.prev_action,
                         np.average(self.prev_action_list),
                         self.agg.max_daily_ghi / 400 - 1,
-                        (np.clip(self.agg.max_load, 60, None) - 80) / 40,
+                        (np.clip((self.agg.max_load - (self.agg.max_setpoint * self.agg.config['community']['total_number_homes'][0])), 0, None)/ self.agg.max_poss_load - 0.5,
                         2*(np.average(self.agg.agg_setpoint) / self.agg.max_load) -1])
 
     def step(self, action): # done

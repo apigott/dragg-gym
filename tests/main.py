@@ -26,7 +26,7 @@ for t in [2]:
         env.agg.lam = l
         env.agg.max_rp = 0.02
 
-        model_name = f"30houses"
+        model_name = f"v2-state"
         log.logger.info(f"Model name set to: {model_name}")
 
         env.agg.version = "dn-" + model_name
