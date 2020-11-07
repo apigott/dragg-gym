@@ -34,6 +34,7 @@ class DRAGGEnv(gym.Env):
         self.agg.lam = 10
         self.agg.max_rp = 0.02
         self.agg.max_setpoint = 2
+        self.agg.max_load = 0
 
         action_low = np.array([-1
                             ], dtype=np.float32)
