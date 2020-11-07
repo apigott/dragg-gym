@@ -120,7 +120,7 @@ class DRAGGEnv(gym.Env):
                         self.prev_action,
                         np.average(self.prev_action_list),
                         self.agg.max_daily_ghi / 400 - 1,
-                        (np.clip((self.agg.max_load - (self.agg.max_setpoint * self.agg.config['community']['total_number_homes'][0])), 0, None)/ self.agg.max_poss_load - 0.5,
+                        (np.clip((self.agg.max_load - (self.agg.max_setpoint * self.agg.config['community']['total_number_homes'][0])), 0, None))/ self.agg.max_poss_load - 0.5,
                         2*(np.average(self.agg.agg_setpoint) / self.agg.max_load) -1])
 
     def step(self, action): # done
