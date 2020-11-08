@@ -12,7 +12,7 @@ from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
 run = ['dn', 'rl', 'tou']
-mode = 'train' # or load
+mode = 'load' # or load
 num_steps = 1000
 
 log = Logger("main")
@@ -26,7 +26,7 @@ for t in [2]:
         env.agg.lam = l
         env.agg.max_rp = 0.02
 
-        model_name = f"v2-state"
+        model_name = "v2-state"
         log.logger.info(f"Model name set to: {model_name}")
 
         env.agg.version = "dn-" + model_name
