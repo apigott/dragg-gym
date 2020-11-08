@@ -12,7 +12,7 @@ from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
 run = ['dn', 'rl', 'tou']
-mode = 'load' # or load
+mode = 'train' # or load
 num_steps = 1000
 
 log = Logger("main")
@@ -20,13 +20,13 @@ log = Logger("main")
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 
-for t in [2]:
+for t in [1.5, 1.75, 2.0]:
     env.agg.max_setpont = t
-    for l in [1]:
+    for l in [1, 2, 3]:
         env.agg.lam = l
         env.agg.max_rp = 0.02
 
-        model_name = "v2-state"
+        model_name = f"t{int(t*100)}l{l}"
         log.logger.info(f"Model name set to: {model_name}")
 
         env.agg.version = "dn-" + model_name
