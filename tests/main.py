@@ -12,7 +12,7 @@ from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
 run = ['dn', 'rl', 'tou']
-mode = 'load' # or load
+mode = 'train' # or load
 num_steps = 1000
 
 log = Logger("main")
