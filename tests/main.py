@@ -11,9 +11,9 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['tou']
-mode = 'load' # or load
-num_steps = 240
+run = ['dn', 'rl', 'tou']
+mode = 'train' # or load
+num_steps = 720
 
 log = Logger("main")
 
@@ -82,7 +82,7 @@ for t in [2]:
             env.agg.redis_add_all_data()
             for h in env.agg.all_homes_obj:
                 h.initialize_environmental_variables()
-                
+
             obs = env.reset()
             for _ in range(num_steps):
                 action = 0
