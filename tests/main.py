@@ -11,7 +11,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['dn', 'rl', 'tou']
+run = ['dn','rl','tou']
 mode = 'train' # or load
 num_steps = 720
 
@@ -33,16 +33,16 @@ for t in [2]:
 
         env.reset()
         log.logger.info("Begining normalization process for reward function.")
-        # for _ in range(50):
-        #     action = 0
-        #     obs, reward, done, info = env.step(action)
-        # max_reward = env.max_reward
-        # min_reward = env.min_reward
-        # avg_reward = env.avg_reward
-        # log.logger.info([f"Normalizing the RL agent against: Max Reward = {str(max_reward)}, Min Reward = {str(min_reward)}, Avg Reward = {str(avg_reward)}"])
-        # env.agg.n_max_reward = max_reward
-        # env.agg.n_min_reward = min_reward
-        # env.agg.n_avg_reward = avg_reward
+        for _ in range(50):
+            action = 0
+            obs, reward, done, info = env.step(action)
+        max_reward = env.max_reward
+        min_reward = env.min_reward
+        avg_reward = env.avg_reward
+        log.logger.info([f"Normalizing the RL agent against: Max Reward = {str(max_reward)}, Min Reward = {str(min_reward)}, Avg Reward = {str(avg_reward)}"])
+        env.agg.n_max_reward = max_reward
+        env.agg.n_min_reward = min_reward
+        env.agg.n_avg_reward = avg_reward
 
         if 'rl' in run:
             env.agg.version = model_name
