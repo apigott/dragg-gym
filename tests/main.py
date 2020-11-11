@@ -11,9 +11,9 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['dn', 'rl', 'tou']
+run = ['tou']
 mode = 'load' # or load
-num_steps = 1000
+num_steps = 240
 
 log = Logger("main")
 
@@ -26,23 +26,23 @@ for t in [2]:
         env.agg.lam = l
         env.agg.max_rp = 0.02
 
-        model_name = "lam15-v2"
+        model_name = "batt"
         log.logger.info(f"Model name set to: {model_name}")
 
         env.agg.version = "dn-" + model_name
 
         env.reset()
         log.logger.info("Begining normalization process for reward function.")
-        for _ in range(50):
-            action = 0
-            obs, reward, done, info = env.step(action)
-        max_reward = env.max_reward
-        min_reward = env.min_reward
-        avg_reward = env.avg_reward
-        log.logger.info([f"Normalizing the RL agent against: Max Reward = {str(max_reward)}, Min Reward = {str(min_reward)}, Avg Reward = {str(avg_reward)}"])
-        env.agg.n_max_reward = max_reward
-        env.agg.n_min_reward = min_reward
-        env.agg.n_avg_reward = avg_reward
+        # for _ in range(50):
+        #     action = 0
+        #     obs, reward, done, info = env.step(action)
+        # max_reward = env.max_reward
+        # min_reward = env.min_reward
+        # avg_reward = env.avg_reward
+        # log.logger.info([f"Normalizing the RL agent against: Max Reward = {str(max_reward)}, Min Reward = {str(min_reward)}, Avg Reward = {str(avg_reward)}"])
+        # env.agg.n_max_reward = max_reward
+        # env.agg.n_min_reward = min_reward
+        # env.agg.n_avg_reward = avg_reward
 
         if 'rl' in run:
             env.agg.version = model_name
@@ -79,7 +79,10 @@ for t in [2]:
             env.agg.config['rl']['utility']['tou_enabled'] = True
             env.agg.config['rl']['utility']['base_price'] = 0.07
             env.agg._build_tou_price()
-
+            env.agg.redis_add_all_data()
+            for h in env.agg.all_homes_obj:
+                h.initialize_environmental_variables()
+                
             obs = env.reset()
             for _ in range(num_steps):
                 action = 0
