@@ -1,3 +1,6 @@
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
@@ -78,7 +81,7 @@ class DRAGGEnv(gym.Env):
 
     def get_reward(self, obs):
         sp = self.agg.agg_setpoint
-        reward = -1*(sp - self.agg.agg_load)**2 - self.agg.lam*(np.clip((self.agg.max_load - (self.agg.max_setpoint * self.agg.config['community']['total_number_homes'][0])), 0, None))
+        reward = -1*(sp - self.agg.agg_load)**2 - self.agg.lam*(np.clip((self.agg.max_load - (self.agg.max_setpoint * self.agg.config['community']['total_number_homes'])), 0, None))
         reward = (reward - self.agg.n_avg_reward) / (self.agg.n_max_reward - self.agg.n_min_reward)
         self.track_reward += reward
         if reward < self.min_reward:
@@ -91,8 +94,8 @@ class DRAGGEnv(gym.Env):
         return reward
 
     def take_action(self, action):
-        print("ACTION", action)
-        action = np.nan_to_num(action, -1,1)
+        # print("ACTION", action)
+        # action = np.nan_to_num(action, -1,1)
 
         self.action_episode_memory[self.curr_episode].append(action)
         self.reward_price = action
@@ -108,8 +111,8 @@ class DRAGGEnv(gym.Env):
 
 
     def get_state(self):
-        return np.array([2*(self.agg.agg_load/self.agg.config['community']['total_number_homes'][0] * 15) -1,
-                        2*(np.sum(self.agg.forecast_load)/self.agg.config['community']['total_number_homes'][0] * 15) -1,
+        return np.array([2*(self.agg.agg_load/self.agg.config['community']['total_number_homes'] * 15) -1,
+                        2*(np.sum(self.agg.forecast_load)/self.agg.config['community']['total_number_homes'] * 15) -1,
                         np.sin(3.14*(self.agg.timestep / self.agg.dt)/12),
                         np.cos(3.14*(self.agg.timestep / self.agg.dt)/12),
                         np.sin(3.14*(self.agg.timestep / (24 * self.agg.dt) / 7)/26),
@@ -121,8 +124,8 @@ class DRAGGEnv(gym.Env):
                         self.prev_action,
                         np.average(self.prev_action_list),
                         self.agg.max_daily_ghi / 400 - 1,
-                        (np.clip((self.agg.max_load - (self.agg.max_setpoint * self.agg.config['community']['total_number_homes'][0])), 0, None))/ self.agg.max_poss_load - 0.5,
-                        2*(np.average(self.agg.agg_setpoint) / self.agg.max_load) -1])
+                        (np.clip((self.agg.max_load - (self.agg.max_setpoint * self.agg.config['community']['total_number_homes'])), 0, None))/ self.agg.max_poss_load - 0.5,
+                        2*(np.average(self.agg.agg_setpoint) / self.agg.max_poss_load) -1])
 
     def step(self, action): # done
         self.curr_step += 1
