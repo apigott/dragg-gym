@@ -23,12 +23,12 @@ log = Logger("main")
 env = gym.make('dragg-v0')
 env._max_episode_steps = 1000
 
-for i in [85]:
+for i in [1,2]:
     for t in [2]:
         env.agg.max_setpont = t
         for l in [20]:
             env.agg.lam = l
-            env.agg.max_rp = 0.017
+            env.agg.max_rp = 0.02
 
             model_name = "l2agg-plus20"
             log.logger.info(f"Model name set to: {model_name}")
@@ -51,7 +51,7 @@ for i in [85]:
             if 'rl' in run:
                 env.agg.version = model_name + "-" + str(i)
                 env.agg.config['rl']['utility']['tou_enabled'] = False
-                env.agg.config['rl']['utility']['base_price'] = 0.085
+                env.agg.config['rl']['utility']['base_price'] = 0.1
                 env.agg._build_tou_price()
                 env.agg.redis_add_all_data()
                 for h in env.agg.all_homes_obj:
