@@ -15,7 +15,7 @@ from stable_baselines.sac.policies import LnMlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import PPO2, A2C, SAC, HER
 
-run = ['dn']
+run = ['dn', 'rl']
 mode = 'load' # or load
 num_steps = 720
 checkpoint_interval = 24

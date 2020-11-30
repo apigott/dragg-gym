@@ -59,6 +59,7 @@ class DRAGGEnv(gym.Env):
         self.n_avg_reward = 0
         self.n_normalization_steps = n_normalization_steps
         self.normalize_reward_values()
+        self.reset()
 
     def my_reward_func(self):
         frac = self.agg.agg_load / self.agg.max_poss_load
