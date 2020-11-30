@@ -22,9 +22,8 @@ class MyAggregator(Aggregator):
         self.max_rp = self.config['agg']['rl']['max_rp']
         self.all_rewards = []
         self.avg_load = 0.5 * self.max_poss_load
-        self.forecast_load = None
-        self.agg_setpoint = None
-        self.max_load = None
+        self.agg_setpoint = 0
+        self.max_load = 0
 
     def my_summary(self):
         self.collected_data["Summary"]["rl_rewards"] = self.all_rewards
@@ -40,7 +39,7 @@ class DRAGGEnv(gym.Env):
         self.curr_episode = -1
         self.curr_step = -1
         self.action_episode_memory = []
-        self.prev_action = None
+        self.prev_action = 0
         self.avg_prev_action = 0
 
         # note that the action and state space are clipped to these values.
@@ -48,8 +47,10 @@ class DRAGGEnv(gym.Env):
         action_high = np.array([1], dtype=np.float32)
         self.action_space = spaces.Box(action_low, action_high)
 
-        self.observation_space = None
-        self.get_state()
+        obs_low = -np.ones(15, dtype=np.float32)
+        obs_high = -np.ones(15, dtype=np.float32)
+        self.observation_space = spaces.Box(obs_low, obs_high)
+        # self.get_state()
 
         # note that the OpenAI gym and/or the Stable Baselines implementation of SAC
         # does NOT clip the reward value. It is recommended to normalize the reward value
@@ -124,30 +125,33 @@ class DRAGGEnv(gym.Env):
                 }
 
     def get_state(self):
-        self.state = self.observe()
+        state = self.observe()
+        print(state)
+        # if self.curr_step == -1:
+        #     obs_low = -np.ones(len(state) + sum(state[k]['cyclical']==True for k in state), dtype=np.float32)
+        #     obs_high = -np.ones(len(state) + sum(state[k]['cyclical']==True for k in state), dtype=np.float32)
+        #     # obs_low = -np.ones(13, dtype=np.float32)
+        #     # obs_high = -np.ones(13, dtype=np.float32)
+        #     self.observation_space = spaces.Box(obs_low, obs_high)
+        #     return
 
-        if self.curr_step == -1:
-            obs_low = -np.ones(len(self.state), dtype=np.float32)
-            obs_high = -np.ones(len(self.state), dtype=np.float32)
-            self.observation_space = spaces.Box(obs_low, obs_high)
-            return
+        # else:
+        vals = []
+        for k in state:
+            if state[k]['cyclical'] == False:
+                vals += [2 * state[k]['value'] / (state[k]['max'] - state[k]['min']) - 1]
+            else:
+                vals += [
+                        np.sin(6.28 * state[k]['value'] / (state[k]['max'] - state[k]['min'])),
+                        np.cos(6.28 * state[k]['value'] / (state[k]['max'] - state[k]['min']))
+                ]
 
-        else:
-            vals = []
-            for k in self.state:
-                if self.state[k]['cyclical'] == False:
-                    vals += [2 * self.state[k]['value'] /(self.state[k]['max'] - self.state[k]['min']) - 1]
-                else:
-                    vals += [
-                            np.sin(6.28 * self.state[k]['value'] / (self.state[k]['max'] - self.state[k]['min'])),
-                            np.cos(6.28 * self.state[k]['value'] / (self.state[k]['max'] - self.state[k]['min']))
-                    ]
-
-            if self.verbose:
-                df = pd.DataFrame(self.state)
-                print(df.T)
-
-        return np.array(vals)
+        if self.verbose:
+            df = pd.DataFrame(state)
+            print(df.T)
+        # print("as a python list", vals)
+        # print("as an np array", np.array(vals).shape)
+        return np.array(vals, dtype=np.float32)
 
     def step(self, action): # done
         self.curr_step += 1
